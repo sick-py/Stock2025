@@ -98,8 +98,8 @@ def fetch_data_Alpha_0(symbol, start_date, end_date, interval="60min"):
 
 
 # IEX Cloud setup
-IEX_TOKEN = "YOUR_IEX_CLOUD_SECRET_TOKEN"  # Replace with your token
-BASE_URL = "https://cloud.iexapis.com/stable"
+#IEX_TOKEN = "YOUR_IEX_CLOUD_SECRET_TOKEN"  # Replace with your token
+#BASE_URL = "https://cloud.iexapis.com/stable"
 
 # Function to fetch IEX Cloud intraday data (1-hour intervals)
 def fetch_data_iex(symbol, start_date, end_date, interval="1h"):

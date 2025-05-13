@@ -25,19 +25,19 @@ from dataclasses import dataclass
 @dataclass
 class PatternParams:
     # Stage 1: Big Rise
-    rise_min: float = 0.02           # 5%
-    rise_max: float = 0.10           # 10%
+    rise_min: float = 0.06           # 5%
+    rise_max: float = 0.50           # 50%
     stage1_min_hours: int = 6
     stage1_max_hours: int = 12
 
     # Stage 2: Consolidation
     cons_min_hours: int = 6
     cons_max_hours: int = 30
-    cons_max_range: float = 0.09     # 5% range
+    cons_max_range: float = 0.06     # 6% range
 
     # Stage 3: Doji + Volume Drop
-    doji_body_frac: float = 0.6
-    vol_compare_hours: int = 2       # must be lower than N previous bars
+    doji_body_frac: float = 0.3      # 0.3
+    vol_compare_hours: int = 2       # must be lower than N previous bars ?
 
 class PatternDetector:
     def __init__(self, params: PatternParams = None):
