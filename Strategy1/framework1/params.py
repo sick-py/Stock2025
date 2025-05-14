@@ -11,5 +11,5 @@ class PatternParams:
     cons_max_hours: int = 30
     cons_max_range: float = 0.05   # within 5% range
 
-    doji_body_frac: float = 0.4    # small candle body (10% of range)
-    vol_compare_hours: int = 2     # Volume drop compared to previous 2 hours
+    doji_body_frac: float = 0.4    # small candle body (40% of range)
+    vol_compare_hours: int = 3     # Volume drop compared to previous 2 hours

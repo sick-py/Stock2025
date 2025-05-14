@@ -1,7 +1,10 @@
 import pandas as pd
 from params import PatternParams
-from utils import is_rise, is_consolidating, is_doji, volume_dropping
+from utils import is_rise, is_consolidating, is_doji, volume_dropping, to_float
 
+
+# Every state has a detector object (holds parameters and stores signals)
+# next_state() is a method all subclasses will override — it decides the next state.
 class State:
     def __init__(self, detector):
         self.detector = detector
@@ -9,12 +12,15 @@ class State:
     def next_state(self, df, idx):
         pass
 
+
+
 class UndefinedState(State):
     def next_state(self, df, idx):
         if is_rise(df, idx, self.detector.params):
             return RisingState(self.detector, idx, 1)
         return self
 
+# self.hours track how long the rise lasts
 class RisingState(State):
     def __init__(self, detector, start_idx, hours):
         super().__init__(detector)
@@ -28,12 +34,19 @@ class RisingState(State):
         if self.hours > params.stage1_max_hours:
             return UndefinedState(self.detector)
 
-        total_rise = (df['High'].iloc[idx] - df['Low'].iloc[self.start_idx]) / df['Low'].iloc[self.start_idx]
+        try:
+            high_val = to_float(df['High'].iloc[idx])
+            low_val = to_float(df['Low'].iloc[self.start_idx])
+            total_rise = (high_val - low_val) / low_val
+        except Exception as e:
+            print(f"Indexing or float conversion error at idx={idx}, start={self.start_idx}: {e}")
+            return UndefinedState(self.detector)
 
-        if total_rise >= params.rise_min and total_rise <= params.rise_max:
+        if params.rise_min <= total_rise <= params.rise_max:
             if self.hours >= params.stage1_min_hours:
                 return ConsolidationState(self.detector, idx + 1, 0)
             return self
+
         return UndefinedState(self.detector)
 
 class ConsolidationState(State):
@@ -66,6 +79,6 @@ class VolumeDropState(State):
         if idx >= len(df):
             return UndefinedState(self.detector)
 
-        if is_doji(df.iloc[idx], params) and volume_dropping(df, idx, params):
+        if is_doji(df, idx, params) and volume_dropping(df, idx, params):
             self.detector.signals.append(idx)
         return UndefinedState(self.detector)

@@ -7,7 +7,7 @@ ALPHA_BASE_URL = 'https://www.alphavantage.co/query'
 
 def fetch_data(symbol, source, interval='60min'):
     if source == "yf":
-        print("Using yfinance")
+        #print("Using yfinance")
         return fetch_data_yf(symbol)
     elif source == "al":
         print("Using Alpha Vantage")
@@ -45,8 +45,5 @@ def fetch_data_yf(symbol, interval="60m"):
     df = yf.download(symbol, period="60d", interval=interval, progress=False)
     if df.empty:
         raise ValueError(f"yfinance returned no data for {symbol}")
-    if df.index.tz is None:
-        df.index = df.index.tz_localize("UTC").tz_convert("America/New_York")
-    else:
-        df.index = df.index.tz_convert("America/New_York")
+    df = df[~df.index.duplicated(keep='first')]
     return df
